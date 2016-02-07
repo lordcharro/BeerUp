@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BeerUp</string>
+    <string name="action_settings">Settings</string>
+
+
+    <string name="if_name">No Beer</string>
+    <string name="if_brewery">No Brewery</string>
+    <string name="if_style">No Style</string>
+    <string name="if_date">No Date</string>
+
+</resources>
