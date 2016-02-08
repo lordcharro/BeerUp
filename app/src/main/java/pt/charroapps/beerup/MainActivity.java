@@ -1,7 +1,5 @@
 package pt.charroapps.beerup;
 
-import android.app.Activity;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -11,14 +9,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import android.widget.Toast;
-
-
-import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -41,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     RestAdapter restadapter;
     api beerapi;
     Beer allBeers;
-    ArrayList<Beer> algo;
     Boolean controlo = true;
     int numPages, pageToLoad=2;
     Realm realm;
@@ -51,10 +44,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        /*
+        * Toolbar, RecyclerView and initialize the the Realm DB
+        * */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //algo = new ArrayList<>();
         rv = (RecyclerView) findViewById(R.id.rv);
         rv.setHasFixedSize(true);
 
@@ -63,7 +60,10 @@ public class MainActivity extends AppCompatActivity {
         realm = Realm.getInstance(getApplicationContext());
 
 
-
+        /*
+        * Verify if the device has network, if it's OK then call the REST Web service
+        * if NOT call the DB
+        * */
         if (isNetworkAvailable(this)) {
 
             // Configure Retrofit to use the proper GSON converter
@@ -72,8 +72,6 @@ public class MainActivity extends AppCompatActivity {
                     .setConverter(new GsonConverter(CustomGsonParser.returnCustomParser()))
                     .build();
 
-            //restadapter = new RestAdapter.Builder().setEndpoint("https://api.brewerydb.com/v2").build();
-
             beerapi = restadapter.create(api.class);
 
             beerapi.getData(new Callback<Beer>() {
@@ -81,41 +79,38 @@ public class MainActivity extends AppCompatActivity {
                 public void success(Beer beers, Response response) {
 
                     numPages = beers.getNumberOfPages();
-
                     allBeers = beers;
                     adapter = new BeerAdapter(allBeers);
                     rv.setAdapter(adapter);
-                    Log.d("TAG2", "Tamanho Inicio" + allBeers.getData().size());
-
 
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
-                    Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_SHORT).show();
-                    Log.d("TAG2", "Error " + error);
+                    Toast.makeText(getApplicationContext(), "Failed to connect the Web service", Toast.LENGTH_SHORT).show();
                 }
             });
 
 
         } else {
 
-            RealmResults<Datum> allBeersOff = realm.where(Datum.class).findAll();
-            adapterOff = new DatumAdapter(allBeersOff);
-            rv.setAdapter(adapterOff);
-            Log.d("TAG2", "No internet");
-
+            if(realm.isEmpty())
+                Toast.makeText(getApplicationContext(), "No Web service neither DB", Toast.LENGTH_SHORT).show();
+            else{
+                RealmResults<Datum> allBeersOff = realm.where(Datum.class).findAll();
+                adapterOff = new DatumAdapter(allBeersOff);
+                rv.setAdapter(adapterOff);
+                Toast.makeText(getApplicationContext(), "No Web service, using DB", Toast.LENGTH_SHORT).show();
+            }
         }
-
-
-
-
-
     }
 
     protected void onResume(){
         super.onResume();
 
+        /*
+        * When the recyclerView reaches the end of the list, it is made the call for new results
+        * */
         rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -144,26 +139,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
 
-
+        /*
+        * The user is away from the activity, then it's a good moment to save the results to de DB
+        * if the allBeers isn't empty
+        * */
         if (allBeers!=null) {
-            // Persist your data easily
             realm.beginTransaction();
             realm.copyToRealm(allBeers.getData());
             realm.commitTransaction();
-            Log.d("TAG2", "Entrou em Pause");
-        } else {
-            Log.d("TAG2", "Entrou em Pause mas nao tem Internet");
         }
-
-
     }
 
+    /*
+    * Function to call more results from the Web services, using the api getNextPage
+    * and add to the existing object
+    * */
     public void loadMore(int pageToLoad){
 
         beerapi.getNextPage(pageToLoad, new Callback<Beer>() {
             @Override
             public void success(Beer beers, Response response) {
-
 
                 List<Datum> listData = beers.getData();
                 Datum newData;
@@ -175,13 +170,12 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 adapter.notifyItemInserted(allBeers.getData().size() - 1);
-                Log.d("TAG2", "Tamanho" + allBeers.getData().size());
                 controlo = true;
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Toast.makeText(getApplicationContext(), "Failed 2", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Failed to load more results", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -208,6 +202,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+    * Function to verify the network
+    * */
     public boolean isNetworkAvailable(final Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
