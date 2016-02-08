@@ -8,7 +8,7 @@ An Android app that lists a lot of beers.
 ## Info
 
 A Simple, clean and robust application. With a beautiful design. Lost network connection? No problem, it has offline content.
-Tested: bonus points for all unit or integration tests that make sense
+
 
 ## What is the app doing ?
 
