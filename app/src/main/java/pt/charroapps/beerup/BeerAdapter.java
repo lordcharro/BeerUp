@@ -66,7 +66,7 @@ public class BeerAdapter extends RecyclerView.Adapter<BeerAdapter.BeerViewHolder
         beerViewHolder.name.setText(beers.getData().get(i).getName());
         //beerViewHolder.brewery.setText(beers.getData().get(i).getStyle().getName());
         if((beers.getData().get(i).getStyle())!=null) {
-            beerViewHolder.style.setText(beers.getData().get(i).getStyle().getShortName());
+            beerViewHolder.style.setText(beers.getData().get(i).getStyle().getName());
         }
         String [] dateSplit = (beers.getData().get(i).getCreateDate()).split(" ");
         beerViewHolder.date.setText(dateSplit[0]);

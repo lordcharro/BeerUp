@@ -67,7 +67,7 @@ public class DatumAdapter extends RecyclerView.Adapter<DatumAdapter.DatumViewHol
             beerViewHolder.name.setText(beers.get(i).getName());
             //beerViewHolder.brewery.setText(beers.getData().get(i).getStyle().getName());
             if((beers.get(i).getStyle())!=null) {
-                beerViewHolder.style.setText(beers.get(i).getStyle().getShortName());
+                beerViewHolder.style.setText(beers.get(i).getStyle().getName());
             }
             beerViewHolder.date.setText(beers.get(i).getCreateDate());
 
