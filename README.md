@@ -3,6 +3,8 @@ BeerUp
 
 An Android app that lists a lot of beers.
 
+![BeerUp] (https://dl.dropboxusercontent.com/u/13201398/beerup.png)
+
 ## Info
 
 A Simple, clean and robust application. With a beautiful design. Lost network connection? No problem, it has offline content.
