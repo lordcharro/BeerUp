@@ -15,11 +15,11 @@ The app for the content is using the REST API of the BreweryDB website.
 
 ## Technology Used
 
-**Widgets:** RecyclerView, CardView
-**Networking:** Retrofit, Picasso
-**JSON:** GSON
-**Persistence:** realm.io
-**Testing:** Espresso
++ **Widgets:** RecyclerView, CardView
++ **Networking:** Retrofit, Picasso
++ **JSON:** GSON
++ **Persistence:** realm.io
++ **Testing:** Espresso
 
 ## Behavior
 
