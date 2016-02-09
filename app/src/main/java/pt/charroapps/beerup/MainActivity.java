@@ -16,6 +16,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import pt.charroapps.beerup.model.Beer;
 import pt.charroapps.beerup.model.Datum;
@@ -133,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     protected void onPause(){
@@ -142,14 +142,28 @@ public class MainActivity extends AppCompatActivity {
         /*
         * The user is away from the activity, then it's a good moment to save the results to de DB
         * if the allBeers isn't empty
+        * First remove the old DB and make a new one
+        * Then populate the DB with the new results
         * */
         if (allBeers!=null) {
+
+            realm.close();
+            RealmConfiguration config = realm.getConfiguration();
+            Realm.deleteRealm(config);
+
+            realm = Realm.getInstance(getApplicationContext());
             realm.beginTransaction();
             realm.copyToRealm(allBeers.getData());
             realm.commitTransaction();
+            realm.close();
         }
     }
 
+    protected void onDestroy(){
+        super.onDestroy();
+        if (realm != null)
+            realm.close();
+    }
     /*
     * Function to call more results from the Web services, using the api getNextPage
     * and add to the existing object
