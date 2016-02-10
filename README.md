@@ -31,9 +31,9 @@ The app for the content is using the REST API of the BreweryDB website.
 
 ## Limitations
 
-+ As the REST API of BreweryDB only allows to obtain a list of all beers to the premium users, it was used the endpoint search.
++ As the REST API of BreweryDB only allows to obtain a list of all beers to the premium users, it was used the endpoint search (searching for the element "2").
 + Brewery is not present, since the list of beers doesn't return the brewery. 
-+ It will be necessary make the same number of calls as the same number of items to catch the brewery for each beer.
++ It will be necessary make the same number of calls as the same number of items to catch the brewery for each beer usign the RxJava with Retrofit. Unfortunately I could not make it in time. I'm still studying the RxJava.
 
 
 
